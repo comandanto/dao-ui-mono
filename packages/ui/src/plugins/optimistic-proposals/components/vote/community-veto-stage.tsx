@@ -159,7 +159,7 @@ export const CommunityVetoStage: FC<CommunityVetoStageProps> = ({
                 </div>
 
                 {/* Stats */}
-                <div className="mt-2 grid grid-cols-2 gap-4">
+                <div className="mt-2 grid grid-cols-2 gap-4 md:grid-cols-3">
                   <div className="rounded-lg bg-neutral-50 p-3">
                     <p className="mb-1 text-xs text-neutral-500">Current Vetoes</p>
                     <p className="text-lg font-semibold text-neutral-900">
@@ -177,6 +177,20 @@ export const CommunityVetoStage: FC<CommunityVetoStageProps> = ({
                     <p className="text-xs text-neutral-600">
                       {tokenSymbol} ({thresholdPercentage}%)
                     </p>
+                  </div>
+                  <div className="col-span-2 rounded-lg bg-neutral-50 p-3 md:col-span-1">
+                    <p className="mb-1 text-xs text-neutral-500">Total Voting Power</p>
+                    <p
+                      className="text-lg font-semibold text-neutral-900"
+                      title={
+                        totalSupply > 0n
+                          ? `${Number(formatUnits(totalSupply, 18)).toLocaleString()} ${tokenSymbol}`
+                          : undefined
+                      }
+                    >
+                      {compactNumber(formatUnits(totalSupply, 18))}
+                    </p>
+                    <p className="text-xs text-neutral-600">{tokenSymbol}</p>
                   </div>
                 </div>
               </div>
@@ -259,6 +273,19 @@ export const CommunityVetoStage: FC<CommunityVetoStageProps> = ({
               <div>
                 <dt className="text-sm text-neutral-500">Voting Strategy</dt>
                 <dd className="font-medium text-sm text-neutral-800">Token-based veto voting</dd>
+              </div>
+              <div>
+                <dt className="text-sm text-neutral-500">Total Voting Power</dt>
+                <dd
+                  className="font-medium text-sm text-neutral-800"
+                  title={
+                    totalSupply > 0n
+                      ? `${Number(formatUnits(totalSupply, 18)).toLocaleString()} ${tokenSymbol}`
+                      : undefined
+                  }
+                >
+                  {compactNumber(formatUnits(totalSupply, 18))} {tokenSymbol}
+                </dd>
               </div>
               <div>
                 <dt className="text-sm text-neutral-500">Veto Threshold</dt>
