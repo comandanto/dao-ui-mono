@@ -55,6 +55,18 @@ describe("formatTokenAmount", () => {
     expect(result.formatted).toBe("1.235");
     expect(result.full).toBe("1.2346");
   });
+
+  test("retains exact decimal in full for tiny nonzero amounts below 4 decimal places", () => {
+    const oneWei = 1n;
+    const resultWei = formatTokenAmount(oneWei);
+    expect(resultWei.formatted).toBe("<0.01");
+    expect(resultWei.full).toBe("0.000000000000000001");
+
+    const tinyAmount = parseEther("0.00001");
+    const resultTiny = formatTokenAmount(tinyAmount);
+    expect(resultTiny.formatted).toBe("<0.01");
+    expect(resultTiny.full).toBe("0.00001");
+  });
 });
 
 describe("formatPercentage", () => {

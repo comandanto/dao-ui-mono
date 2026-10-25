@@ -11,10 +11,14 @@ export function formatTokenAmount(amount: bigint, decimals: number = 2): { forma
     };
   }
 
-  const full = numberValue.toLocaleString("en-US", {
+  let full = numberValue.toLocaleString("en-US", {
     minimumFractionDigits: 0,
     maximumFractionDigits: 4,
   });
+
+  if (full === "0" && amount > 0n) {
+    full = fullAmount;
+  }
 
   if (numberValue >= 1_000_000) {
     return {
