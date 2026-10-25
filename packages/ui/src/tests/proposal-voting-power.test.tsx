@@ -3,6 +3,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import { VotingDetails } from "@/components/proposalVoting/votingDetails/votingDetails";
 import { CommunityVetoStage } from "@/plugins/optimistic-proposals/components/vote/community-veto-stage";
+import { formatExactTokenAmount } from "@/utils/numbers";
 
 vi.mock("@/constants", () => ({
   PUB_CHAIN: {
@@ -10,6 +11,15 @@ vi.mock("@/constants", () => ({
   },
   PUB_TOKEN_ADDRESS: "0x10dea67478c5f8c5e2d90e5e9b26dbe60c54d800",
 }));
+
+describe("formatExactTokenAmount helper", () => {
+  test("preserves fractional precision and groups integer thousands", () => {
+    expect(formatExactTokenAmount("1000000000.000000000000000001")).toBe("1,000,000,000.000000000000000001");
+    expect(formatExactTokenAmount("1234567")).toBe("1,234,567");
+    expect(formatExactTokenAmount("0.123456789")).toBe("0.123456789");
+    expect(formatExactTokenAmount("")).toBe("-");
+  });
+});
 
 describe("Proposal Total Voting Power Display (Issue #71)", () => {
   let container: HTMLDivElement;
@@ -28,9 +38,9 @@ describe("Proposal Total Voting Power Display (Issue #71)", () => {
     container.remove();
   });
 
-  test("VotingDetails renders Total Voting Power when supplied", () => {
-    // 1 Billion TAIKO (1,000,000,000 * 10^18)
-    const supply = 1_000_000_000n * 10n ** 18n;
+  test("VotingDetails renders Total Voting Power when supplied with exact title", () => {
+    // 1 Billion TAIKO plus 1 wei
+    const supply = 1_000_000_000n * 10n ** 18n + 1n;
 
     act(() => {
       root.render(
@@ -47,6 +57,9 @@ describe("Proposal Total Voting Power Display (Issue #71)", () => {
 
     expect(container.textContent).toContain("Total Voting Power");
     expect(container.textContent).toContain("1.00B TAIKO");
+    // Verify exact tooltip title preserved with 18 decimal places
+    const elem = container.querySelector('[title*="1,000,000,000.000000000000000001 TAIKO"]');
+    expect(elem).not.toBeNull();
   });
 
   test("VotingDetails hides Total Voting Power when undefined", () => {
@@ -83,5 +96,24 @@ describe("Proposal Total Voting Power Display (Issue #71)", () => {
 
     expect(container.textContent).toContain("Total Voting Power");
     expect(container.textContent).toContain("1.00B");
+  });
+
+  test("CommunityVetoStage keeps unresolved supply (0n) distinct from zero", () => {
+    act(() => {
+      root.render(
+        <CommunityVetoStage
+          vetoCount={0n}
+          totalSupply={0n}
+          threshold={0.15}
+          status="active"
+          tokenSymbol="TAIKO"
+          snapshotBlock={20000000}
+        />
+      );
+    });
+
+    // Should display "-" placeholder instead of misleading "0 TAIKO"
+    expect(container.textContent).toContain("Total Voting Power");
+    expect(container.textContent).not.toContain("0.00B");
   });
 });

@@ -2,7 +2,7 @@ import { FC } from "react";
 import { Card, Tag, Button, Icon, IconType, Tabs } from "@aragon/ods";
 import { Tabs as RadixTabsRoot } from "@radix-ui/react-tabs";
 import { formatUnits } from "viem";
-import { compactNumber } from "@/utils/numbers";
+import { compactNumber, formatExactTokenAmount } from "@/utils/numbers";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import { VotesDataList } from "@/components/proposalVoting/votesDataList/votesDataList";
@@ -170,9 +170,11 @@ export const CommunityVetoStage: FC<CommunityVetoStageProps> = ({
                   <div className="rounded-lg bg-neutral-50 p-3">
                     <p className="mb-1 text-xs text-neutral-500">Required to Veto</p>
                     <p className="text-lg font-semibold text-neutral-900">
-                      {compactNumber(
-                        formatUnits((totalSupply * BigInt(Math.floor(threshold * 1000000))) / 1000000n, 18)
-                      )}
+                      {totalSupply > 0n
+                        ? compactNumber(
+                            formatUnits((totalSupply * BigInt(Math.floor(threshold * 1000000))) / 1000000n, 18)
+                          )
+                        : "-"}
                     </p>
                     <p className="text-xs text-neutral-600">
                       {tokenSymbol} ({thresholdPercentage}%)
@@ -184,11 +186,11 @@ export const CommunityVetoStage: FC<CommunityVetoStageProps> = ({
                       className="text-lg font-semibold text-neutral-900"
                       title={
                         totalSupply > 0n
-                          ? `${Number(formatUnits(totalSupply, 18)).toLocaleString()} ${tokenSymbol}`
+                          ? `${formatExactTokenAmount(formatUnits(totalSupply, 18))} ${tokenSymbol}`
                           : undefined
                       }
                     >
-                      {compactNumber(formatUnits(totalSupply, 18))}
+                      {totalSupply > 0n ? compactNumber(formatUnits(totalSupply, 18)) : "-"}
                     </p>
                     <p className="text-xs text-neutral-600">{tokenSymbol}</p>
                   </div>
@@ -280,11 +282,11 @@ export const CommunityVetoStage: FC<CommunityVetoStageProps> = ({
                   className="font-medium text-sm text-neutral-800"
                   title={
                     totalSupply > 0n
-                      ? `${Number(formatUnits(totalSupply, 18)).toLocaleString()} ${tokenSymbol}`
+                      ? `${formatExactTokenAmount(formatUnits(totalSupply, 18))} ${tokenSymbol}`
                       : undefined
                   }
                 >
-                  {compactNumber(formatUnits(totalSupply, 18))} {tokenSymbol}
+                  {totalSupply > 0n ? `${compactNumber(formatUnits(totalSupply, 18))} ${tokenSymbol}` : "-"}
                 </dd>
               </div>
               <div>

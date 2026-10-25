@@ -2,7 +2,7 @@ import { Else, If, Then } from "@/components/if";
 import { AddressText } from "@/components/text/address";
 import { DefinitionList, Heading, IconType, Link } from "@aragon/ods";
 import { Address, formatUnits } from "viem";
-import { compactNumber } from "@/utils/numbers";
+import { compactNumber, formatExactTokenAmount } from "@/utils/numbers";
 
 export interface IVotingDetailsProps {
   startDate?: string;
@@ -60,7 +60,7 @@ export const VotingDetails: React.FC<IVotingDetailsProps> = (props) => {
                 className="w-full text-neutral-800 md:text-right"
                 title={
                   totalVotingPower && totalVotingPower > 0n
-                    ? `${Number(formatUnits(totalVotingPower, 18)).toLocaleString()} ${tokenSymbol}`
+                    ? `${formatExactTokenAmount(formatUnits(totalVotingPower, 18))} ${tokenSymbol}`
                     : undefined
                 }
               >
